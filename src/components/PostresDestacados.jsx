@@ -39,7 +39,7 @@ function Modal({ postre, onClose }) {
     >
       <div className="absolute inset-0 bg-espresso-900/60 backdrop-blur-sm" />
       <div
-        className="relative bg-white rounded-3xl overflow-hidden max-w-2xl w-full shadow-2xl"
+        className="relative bg-white rounded-3xl overflow-hidden max-w-2xl w-full shadow-2xl max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -64,7 +64,7 @@ function Modal({ postre, onClose }) {
           )}
         </div>
 
-        <div className="p-6 md:p-8">
+        <div className="p-6 md:p-8 overflow-y-auto">
           <div className="flex items-start justify-between gap-4 mb-4">
             <h3 className="font-display text-2xl md:text-3xl text-espresso-800 leading-tight tracking-tight">
               {postre.nombre}
