@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ShoppingBag } from 'lucide-react'
+import { ShoppingBag, X } from 'lucide-react'
 
 const STRAPI_URL = 'https://analysis-everyday-synthetic-betting.trycloudflare.com'
 
@@ -17,13 +17,90 @@ function SkeletonCard() {
   )
 }
 
-function ProductCard({ postre }) {
+function Modal({ postre, onClose }) {
+  const imgUrl = postre.imagen?.url
+    ? `${STRAPI_URL}${postre.imagen.url}`
+    : 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Torta_chaj%C3%A1.jpg'
+
+  useEffect(() => {
+    const onKey = (e) => e.key === 'Escape' && onClose()
+    document.addEventListener('keydown', onKey)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
+    }
+  }, [onClose])
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-espresso-900/60 backdrop-blur-sm" />
+      <div
+        className="relative bg-white rounded-3xl overflow-hidden max-w-2xl w-full shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-espresso-900/70 text-cream-50 hover:bg-espresso-800 transition-colors"
+        >
+          <X size={16} />
+        </button>
+
+        <div className="aspect-[16/9] overflow-hidden relative">
+          <img
+            src={imgUrl}
+            alt={postre.nombre}
+            className="w-full h-full object-cover"
+            onError={(e) => { e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Torta_chaj%C3%A1.jpg' }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-espresso-900/40 to-transparent" />
+          {postre.tag && (
+            <span className="absolute top-4 left-4 text-[10px] font-medium tracking-[0.16em] uppercase px-3 py-1.5 rounded-full bg-amber/90 text-espresso-900">
+              {postre.tag}
+            </span>
+          )}
+        </div>
+
+        <div className="p-6 md:p-8">
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <h3 className="font-display text-2xl md:text-3xl text-espresso-800 leading-tight tracking-tight">
+              {postre.nombre}
+            </h3>
+            <div className="text-right shrink-0">
+              <p className="font-mono text-2xl font-semibold text-espresso-800">{postre.precio}</p>
+              {postre.peso && <p className="text-espresso-400 text-sm">{postre.peso}</p>}
+            </div>
+          </div>
+
+          <p className="text-espresso-500 text-base leading-relaxed mb-6">{postre.descripcion}</p>
+
+          <a
+            href="#pedidos"
+            onClick={onClose}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-espresso-800 text-cream-50 text-sm font-medium hover:bg-espresso-700 transition-all duration-300 active:scale-[0.98]"
+          >
+            <ShoppingBag size={14} strokeWidth={1.5} />
+            Hacer un pedido
+          </a>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ProductCard({ postre, onClick }) {
   const imgUrl = postre.imagen?.url
     ? `${STRAPI_URL}${postre.imagen.url}`
     : 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Torta_chaj%C3%A1.jpg'
 
   return (
-    <div className="group flex flex-col bg-white border border-cream-200/60 rounded-2xl overflow-hidden hover:shadow-[0_16px_40px_-12px_rgba(44,26,14,0.14)] transition-shadow duration-500">
+    <div
+      className="group flex flex-col bg-white border border-cream-200/60 rounded-2xl overflow-hidden hover:shadow-[0_16px_40px_-12px_rgba(44,26,14,0.14)] transition-shadow duration-500 cursor-pointer"
+      onClick={onClick}
+    >
       <div className="aspect-[4/3] overflow-hidden relative">
         <img
           src={imgUrl}
@@ -50,15 +127,12 @@ function ProductCard({ postre }) {
           </div>
         </div>
 
-        <p className="text-espresso-500 text-sm leading-relaxed mb-4 flex-1">{postre.descripcion}</p>
+        <p className="text-espresso-500 text-sm leading-relaxed mb-4 flex-1 line-clamp-2">{postre.descripcion}</p>
 
-        <a
-          href="#pedidos"
-          className="inline-flex items-center gap-2 self-start px-4 py-2.5 rounded-full bg-espresso-800 text-cream-50 text-xs font-medium hover:bg-espresso-700 transition-all duration-300 active:scale-[0.98]"
-        >
+        <span className="inline-flex items-center gap-2 self-start px-4 py-2.5 rounded-full bg-espresso-800 text-cream-50 text-xs font-medium group-hover:bg-espresso-700 transition-all duration-300">
           <ShoppingBag size={12} strokeWidth={1.5} />
-          Pedir este
-        </a>
+          Ver detalles
+        </span>
       </div>
     </div>
   )
@@ -68,6 +142,7 @@ export default function PostresDestacados() {
   const [postres, setPostres] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [selected, setSelected] = useState(null)
 
   useEffect(() => {
     fetch(`${STRAPI_URL}/api/postre-destacados?filters[disponible][$eq]=true&sort=orden:asc&populate=imagen`)
@@ -110,10 +185,12 @@ export default function PostresDestacados() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {loading
             ? [1, 2, 3].map((n) => <SkeletonCard key={n} />)
-            : postres.map((p) => <ProductCard key={p.id} postre={p} />)
+            : postres.map((p) => <ProductCard key={p.id} postre={p} onClick={() => setSelected(p)} />)
           }
         </div>
       </div>
+
+      {selected && <Modal postre={selected} onClose={() => setSelected(null)} />}
     </section>
   )
 }
