@@ -39,7 +39,7 @@ function Modal({ postre, onClose }) {
     >
       <div className="absolute inset-0 bg-espresso-900/60 backdrop-blur-sm" />
       <div
-        className="relative bg-white rounded-3xl overflow-hidden max-w-2xl w-full shadow-2xl max-h-[90vh] flex flex-col"
+        className="relative bg-white rounded-3xl overflow-hidden max-w-3xl w-full shadow-2xl max-h-[90vh] flex flex-col md:flex-row"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -49,14 +49,14 @@ function Modal({ postre, onClose }) {
           <X size={16} />
         </button>
 
-        <div className="h-56 md:h-64 shrink-0 overflow-hidden relative">
+        <div className="md:w-2/5 shrink-0 overflow-hidden relative h-56 md:h-auto">
           <img
             src={imgUrl}
             alt={postre.nombre}
             className="w-full h-full object-cover"
             onError={(e) => { e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Torta_chaj%C3%A1.jpg' }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-espresso-900/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-espresso-900/40 to-transparent md:bg-gradient-to-r" />
           {postre.tag && (
             <span className="absolute top-4 left-4 text-[10px] font-medium tracking-[0.16em] uppercase px-3 py-1.5 rounded-full bg-amber/90 text-espresso-900">
               {postre.tag}
@@ -64,7 +64,7 @@ function Modal({ postre, onClose }) {
           )}
         </div>
 
-        <div className="p-6 md:p-8 overflow-y-auto">
+        <div className="flex flex-col flex-1 p-6 md:p-8 overflow-y-auto">
           <div className="flex items-start justify-between gap-4 mb-4">
             <h3 className="font-display text-2xl md:text-3xl text-espresso-800 leading-tight tracking-tight">
               {postre.nombre}
@@ -75,12 +75,12 @@ function Modal({ postre, onClose }) {
             </div>
           </div>
 
-          <p className="text-espresso-500 text-base leading-relaxed mb-6">{postre.descripcion}</p>
+          <p className="text-espresso-500 text-base leading-relaxed mb-6 flex-1">{postre.descripcion}</p>
 
           <a
             href="#pedidos"
             onClick={onClose}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-espresso-800 text-cream-50 text-sm font-medium hover:bg-espresso-700 transition-all duration-300 active:scale-[0.98]"
+            className="inline-flex items-center gap-2 self-start px-6 py-3 rounded-full bg-espresso-800 text-cream-50 text-sm font-medium hover:bg-espresso-700 transition-all duration-300 active:scale-[0.98]"
           >
             <ShoppingBag size={14} strokeWidth={1.5} />
             Hacer un pedido
