@@ -49,7 +49,7 @@ function Modal({ postre, onClose }) {
           <X size={16} />
         </button>
 
-        <div className="aspect-[16/9] overflow-hidden relative">
+        <div className="h-56 md:h-64 shrink-0 overflow-hidden relative">
           <img
             src={imgUrl}
             alt={postre.nombre}
