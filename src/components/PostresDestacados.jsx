@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ShoppingBag, X } from 'lucide-react'
 
-const STRAPI_URL = 'https://analysis-everyday-synthetic-betting.trycloudflare.com'
+const STRAPI_URL = 'https://bangkok-sending-remedies-allowance.trycloudflare.com'
 
 function SkeletonCard() {
   return (
